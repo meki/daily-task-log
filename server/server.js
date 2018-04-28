@@ -18,10 +18,22 @@ const client = new Client({
 
 client.connect();
 
+var isClientConnected = false;
 client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
-  if (err) throw err;
+  if (err) { throw err; }
+
   for (let row of res.rows) {
     console.log(JSON.stringify(row));
   }
+  isClientConnected = true;
   client.end();
+});
+
+app.get('/', function (req, res) {
+  if(isClientConnected) {
+      res.send('Hello World!');
+  }
+  else {
+    res.send('Sorry :<! DB connection failed.');
+  }
 });
